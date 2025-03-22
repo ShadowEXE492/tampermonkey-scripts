@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
@@ -201,19 +201,15 @@
                 $(".mod_description_container.blur-description").removeClass("blur-description");
                 GM_addStyle(".blur-image-sm img {filter: blur(0px)}");
                 GM_addStyle(".blur-image img {filter: blur(0px)}")
-                $(".blur-image-gone").addClass("blur-image-gone-override");
-                $(".blur-image-sm").addClass("blur-image-override");
-                $(".blur-xl").addClass("blur-image-override");
                 GM_addStyle(".unblur-btn {visibility: hidden}");
-                $("#remove-blur").addClass("hide");
+                GM_addStyle(".blur-xl {--tw-blur: blur(0px)")
             } else {
                 $(".mod_description_container").addClass("blur-description");
                 $(".hide").removeClass("hide");
-                //$(".blur-image-override").removeClass("blur-image-override");
                 GM_addStyle(".blur-image-sm img {filter: blur(24px)}");
                 GM_addStyle(".blur-image img {filter: blur(64px)}")
                 GM_addStyle(".unblur-btn {visibility: visible}");
-                $("#remove-blur").removeClass("hide");
+                GM_addStyle(".blur-xl {--tw-blur: blur(24px)")
             }
         }
 
