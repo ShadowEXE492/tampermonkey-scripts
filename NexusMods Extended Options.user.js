@@ -79,7 +79,7 @@
         }, 0);
     }
 
-    $('.rj-settings-extended-tray-content').append("<li><div class=\"section-content\"><div class=\"user-profile-menu-username\">Extended Settings</div></div></li>");
+    $('.rj-settings-extended-tray-content').append("<li><div class=\"section-content\"><div class=\"settings-extended-title\">Extended Settings</div></div></li>");
     GM_addStyle(".settings-extended-title {font-size: 16px; font-weight: 700; line-height-24px; color: var(--colour-neutral-moderate); text-align: center;}");
     GM_addStyle(".rj-settings-extended-tray-content .section-content {display: flex; font-size: 16, column-gap:12px; line-height: 1.5; font-weight: 400; letter-spacing: 0; padding: 10px 16px; align-items: center; color: var(--colour-neutral-moderate)}");
 
