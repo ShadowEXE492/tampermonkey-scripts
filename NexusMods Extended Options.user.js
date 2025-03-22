@@ -11,8 +11,8 @@
 // @grant        GM_getValue
 // @grant        GM_log
 // @grant        GM_registerMenuCommand
-// @downloadURL  
-// @updateURL    
+// @downloadURL  https://github.com/ShadowEXE492/tampermonkey-scripts/raw/refs/heads/main/NexusMods%20Extended%20Options.user.js
+// @updateURL    https://github.com/ShadowEXE492/tampermonkey-scripts/raw/refs/heads/main/NexusMods%20Extended%20Options.user.js
 // ==/UserScript==
 
 (() => {
@@ -43,7 +43,6 @@
     document.getElementById('head').appendChild(settingsTray);
     GM_addStyle(".rj-notifications-tray .arrow { right: 150px }");
     GM_addStyle(".rj-settings-extended-tray { height: 0px; border-radius: 4px; overflow: hidden; }");
-    //GM_addStyle(".rj-settings-extended-tray.rj-open { height: 500px; }");
     GM_addStyle(".rj-settings-extended-tray-content { min-width: 208px; max-width: 288px; border-radius: 4px; background-color: var(--colour-surface-mid); border: solid 1px var(--colour-stroke-weak); }");
 
     $('.rj-settings-extended').click(ExtendedSettings);
