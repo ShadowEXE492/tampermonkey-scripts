@@ -216,30 +216,24 @@
         }
 
         function remove_blur() {
-            if (autoRBlur && contains_blur()) {
+            if (autoRBlur) {
                 $(".mod_adult_warning_wrapper").addClass("hide");
+                $(".mod_description_container.blur-description").addClass("blur-removed");
                 $(".mod_description_container.blur-description").removeClass("blur-description");
                 GM_addStyle(".blur-image-sm img {filter: blur(0px)}");
                 GM_addStyle(".blur-image img {filter: blur(0px)}");
                 GM_addStyle(".unblur-btn {visibility: hidden}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(0px)}");
                 document.getElementById('remove-blur').classList.add('hide');
-            } else if(!contains_blur()) {
+            } else if($('.mod_description_container.blur-removed')[0] != null) {
                 $(".mod_description_container").addClass("blur-description");
+                $(".mod_description_container").removeClass("blur-removed");
                 $(".hide").removeClass("hide");
                 GM_addStyle(".blur-image-sm img {filter: blur(24px)}");
                 GM_addStyle(".blur-image img {filter: blur(64px)}");
                 GM_addStyle(".unblur-btn {visibility: visible}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
                 document.getElementById('remove-blur').classList.remove('hide');
-            }
-        }
-
-        function contains_blur() {
-            if ($('.blur-image') != null || $('.blur-xl') != null) {
-                return true;
-            } else {
-                return false;
             }
         }
 
