@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.1.1
+// @version      1.1.2
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
@@ -224,6 +224,7 @@
                 GM_addStyle(".blur-image img {filter: blur(0px)}");
                 GM_addStyle(".unblur-btn {visibility: hidden}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(0px)}");
+                document.getElementById('remove-blur').addClass('hide');
             } else {
                 $(".mod_description_container").addClass("blur-description");
                 $(".hide").removeClass("hide");
@@ -231,6 +232,7 @@
                 GM_addStyle(".blur-image img {filter: blur(64px)}");
                 GM_addStyle(".unblur-btn {visibility: visible}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
+                document.getElementById('remove-blur').removeClass('hide');
             }
         }
 
@@ -252,7 +254,7 @@
         }
 
         const list = document.getElementsByClassName("modactions clearfix")[0];
-        if (list && !autoRBlur) {
+        if (list) {
             const newNode = document.createElement("li");
             const buttonNode = document.createElement("button");
             buttonNode.classList.add("btn", "inline-flex");
@@ -266,8 +268,6 @@
                 autoRBlur = true;
                 remove_blur()
             });
-        } else if (autoRBlur) {
-            remove_blur();
         }
     });
 })();
