@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.1.2
+// @version      1.1.3
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
@@ -25,7 +25,6 @@
         var popularCollections = GM_getValue("popular_collections", false);
 
         extend_page();
-        remove_blur();
         hide_collections();
 
         var old_menu = null;
@@ -268,6 +267,8 @@
                 autoRBlur = true;
                 remove_blur()
             });
+        } else if (autoRBlur) {
+            remove_blur();
         }
     });
 })();
