@@ -234,6 +234,8 @@
                 GM_addStyle(".unblur-btn {visibility: visible}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
                 document.getElementById('remove-blur').classList.remove('hide');
+            } else {
+                document.getElementById('remove-blur').classList.add('hide');
             }
         }
 
