@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.1.5
+// @version      1.1.6
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
