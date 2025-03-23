@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.1.3
+// @version      1.1.4
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
@@ -223,7 +223,7 @@
                 GM_addStyle(".blur-image img {filter: blur(0px)}");
                 GM_addStyle(".unblur-btn {visibility: hidden}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(0px)}");
-                document.getElementById('remove-blur').addClass('hide');
+                document.getElementById('remove-blur').classList.add('hide');
             } else {
                 $(".mod_description_container").addClass("blur-description");
                 $(".hide").removeClass("hide");
@@ -231,7 +231,7 @@
                 GM_addStyle(".blur-image img {filter: blur(64px)}");
                 GM_addStyle(".unblur-btn {visibility: visible}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
-                document.getElementById('remove-blur').removeClass('hide');
+                document.getElementById('remove-blur').classList.remove('hide');
             }
         }
 
