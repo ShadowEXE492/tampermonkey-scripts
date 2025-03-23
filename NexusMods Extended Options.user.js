@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.1.4
+// @version      1.1.5
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
@@ -216,7 +216,7 @@
         }
 
         function remove_blur() {
-            if (autoRBlur) {
+            if (autoRBlur && contains_blur()) {
                 $(".mod_adult_warning_wrapper").addClass("hide");
                 $(".mod_description_container.blur-description").removeClass("blur-description");
                 GM_addStyle(".blur-image-sm img {filter: blur(0px)}");
@@ -224,7 +224,7 @@
                 GM_addStyle(".unblur-btn {visibility: hidden}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(0px)}");
                 document.getElementById('remove-blur').classList.add('hide');
-            } else {
+            } else if(!contains_blur()) {
                 $(".mod_description_container").addClass("blur-description");
                 $(".hide").removeClass("hide");
                 GM_addStyle(".blur-image-sm img {filter: blur(24px)}");
@@ -232,6 +232,14 @@
                 GM_addStyle(".unblur-btn {visibility: visible}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
                 document.getElementById('remove-blur').classList.remove('hide');
+            }
+        }
+
+        function contains_blur() {
+            if ($('.blur-image') != null || $('.blur-xl') != null) {
+                return true;
+            } else {
+                return false;
             }
         }
 
