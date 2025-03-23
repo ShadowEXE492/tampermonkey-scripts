@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.0.3
+// @version      1.1.1
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
+// @match        https://next.nexusmods.com/*
 // @icon         https://www.nexusmods.com/favicon.ico
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @grant        GM_addStyle
@@ -21,10 +22,11 @@
     jQuery(document).ready(function ($) {
         var autoRBlur = GM_getValue("rBlur", false);
         var extendPage = GM_getValue("extend_page", false);
+        var popularCollections = GM_getValue("popular_collections", false);
 
         extend_page();
         remove_blur();
-
+        hide_collections();
 
         var old_menu = null;
         var new_menu = null;
@@ -50,7 +52,6 @@
 
         }
         else if (new_menu != null) {
-            console.log("new_menu")
             const new_menu_item = document.createElement('div');
             const new_menu_button = document.createElement('button');
             new_menu_item.append(new_menu_button);
@@ -61,10 +62,10 @@
             new_menu_button.classList = "flex items-center justify-center shrink-0 rounded-full before:rounded-full transition size-10 cursor-pointer hover-overlay text-neutral-moderate hover:text-neutral-strong select-none";
             new_menu_button.id = "new_menu";
         
-            head = document.getElementById('headlessui-portal-root');
+            head = document.getElementById('new_menu').parentElement;
             menu_item = $('#new_menu');
 
-            GM_addStyle('.rj-right-tray {position: absolute; right: 0px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3087px; max-height: min(var(--anchor-max-height, 100vh), 1215px);}');
+            GM_addStyle('.rj-right-tray {position: fixed; right: 0px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3087px; max-height: min(var(--anchor-max-height, 100vh), 1215px);}');
         }
         else {
             console.log(old_menu);
@@ -98,12 +99,12 @@
             ".wrapper-wide { max-width: 1920px; } @media (min-width: 1920px) { .next-container-wide { width: 1920px }}"
         );
         GM_addStyle(
-            ".blur-image-override img { filter: blur(0px) } .hide { visibility: hidden }"
+            ".blur-image-override img { filter: blur(0px) } .hide { visibility: hidden; height: 0px; padding: 0px; }"
         );
-        $("body").click(function () {
-            console.log('second hidden');
-            //hideExtendedSettingsTray();
+        $("#mainContent").click(function () {
+            hideExtendedSettingsTray();
         });
+
         menu_item.click(ExtendedSettings);
         //$(".rj-notifications").click(function () {
         //    hideExtendedSettingsTray();
@@ -115,13 +116,10 @@
 
         //const s = $(".rj-settings-extended-tray");
         function ExtendedSettings() {
-            console.log(document.getElementById("settings_tray"));
             if (document.getElementById("settings_tray") != null ) {
                 hideExtendedSettingsTray();
-                console.log('hidden');
             } else {
                 showExtendedSettingsTray();
-                console.log('shown');
             }
         }
 
@@ -142,7 +140,6 @@
                 //settingsTray.style = "position: absolute; left: 3167px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3375px; max-height: min(var(--anchor-max-height, 100vh), 1232px);";
                 settingsTrayContent.classList = "rj-right-tray-content rj-settings-extended-tray-content";
                 settingsTray.appendChild(settingsTrayContent);
-                console.log(head);
                 head.appendChild(settingsTray);
                 $(".rj-settings-extended-tray-content").append('<li><div class="section-content"><svg viewBox="0 0 24 24" style="width: 1.5rem; height: 1.5rem;" role="presentation" class="flex-shrink-0"><path d="M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z" style="fill: currentcolor;"></path></svg><div class="settings-extended-title">Extended Settings</div></div></li><li class="bg-surface-translucent-mid my-1.5 block h-px w-full user-profile-menu-divider"></li>');
 
@@ -151,6 +148,9 @@
 
                 $(".rj-settings-extended-tray-content").append(createToggle("Toggle Hide Blur", "toggle-hide-blur", autoRBlur));
                 $("#toggle-hide-blur").click(function () { toggle_hide_blur(document.getElementById("toggle-hide-blur").children[0].children[0]); });
+
+                $(".rj-settings-extended-tray-content").append(createToggle("Hide Popular Collections", "toggle-collections", popularCollections));
+                $("#toggle-collections").click(function () { toggle_popular_collections(document.getElementById("toggle-collections").children[0].children[0])});
             }, 0);
         }
 
@@ -193,8 +193,8 @@
         function extend_page_func(toggle) {
             extendPage = !extendPage;
             GM_setValue("extend_page", extendPage);
-            extend_page();
             toggle.innerHTML = flipToggle(extendPage);
+            extend_page();
         }
 
         function extend_page() {
@@ -212,8 +212,8 @@
         function toggle_hide_blur(toggle) {
             autoRBlur = !autoRBlur;
             GM_setValue("rBlur", autoRBlur);
-            remove_blur();
             toggle.innerHTML = flipToggle(autoRBlur);
+            remove_blur();
         }
 
         function remove_blur() {
@@ -232,6 +232,23 @@
                 GM_addStyle(".unblur-btn {visibility: visible}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
             }
+        }
+
+        function toggle_popular_collections(toggle) {
+            popularCollections = !popularCollections;
+            GM_setValue("popular_collections", popularCollections);
+            toggle.innerHTML = flipToggle(popularCollections);
+            hide_collections();
+        }
+
+        function hide_collections() {
+            try {
+                if (popularCollections) {
+                    document.getElementById('popular-collections-header').parentElement.parentElement.classList.add("hide");
+                } else {
+                    document.getElementById('popular-collections-header').parentElement.parentElement.classList.remove("hide");
+                }
+            } catch {console.warn("Not on home page");}
         }
 
         const list = document.getElementsByClassName("modactions clearfix")[0];
