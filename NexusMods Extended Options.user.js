@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.0.2
+// @version      1.0.3
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
@@ -25,8 +25,15 @@
         extend_page();
         remove_blur();
 
-        
-        if ($(".nav-interact-buttons") != null) {
+
+        var old_menu = null;
+        var new_menu = null;
+            try { old_menu = $(".nav-interact-buttons")[0] } catch { console.error("old_menu was undifined");};
+            try { new_menu = $('.lg\\:gap-x-2') } catch { console.error("new_menu was undifined");};
+        var head = null;
+        var menu_item = null;
+
+        if (old_menu != null) {
             const settingsButton = document.createElement("div");
             const settingsButtonBackground = document.createElement("div");
             const settingsButtonIcon = document.createElement("i");
@@ -36,73 +43,46 @@
             settingsButtonIcon.textContent = "tune";
             settingsButton.appendChild(settingsButtonBackground);
             settingsButton.appendChild(settingsButtonIcon);
-            $(".nav-interact-buttons")[0].appendChild(settingsButton);
-        }
-        else if ($('.lg\\:gap-x-2') != null) {
+            old_menu.appendChild(settingsButton);
 
+            head = document.getElementById("head");
+            menu_item = $(".rj-settings-extended");
+
+        }
+        else if (new_menu != null) {
+            console.log("new_menu")
+            const new_menu_item = document.createElement('div');
+            const new_menu_button = document.createElement('button');
+            new_menu_item.append(new_menu_button);
+            new_menu_button.innerHTML = "<svg viewBox=\"0 0 24 24\" style=\"width: 1.5rem; height: 1.5rem;\" role=\"presentation\" class=\"flex-shrink-0\"><path d=\"M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z\" style=\"fill: currentcolor;\"></path></svg>";
+            new_menu.append(new_menu_item);
+
+            new_menu_item.classList = "relative flex items-center justify-center";
+            new_menu_button.classList = "flex items-center justify-center shrink-0 rounded-full before:rounded-full transition size-10 cursor-pointer hover-overlay text-neutral-moderate hover:text-neutral-strong select-none";
+            new_menu_button.id = "new_menu";
+        
+            head = document.getElementById('headlessui-portal-root');
+            menu_item = $('#new_menu');
+
+            GM_addStyle('.rj-right-tray {position: absolute; right: 0px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3087px; max-height: min(var(--anchor-max-height, 100vh), 1215px);}');
+        }
+        else {
+            console.log(old_menu);
+            console.log(new_menu);
         }
         //create settings menu
         //menu button
-        
 
         //menu panel
-        const settingsTray = document.createElement("div");
-        const settingsTrayContent = document.createElement("ul");
-        settingsTray.classList = "rj-right-tray rj-settings-extended-tray";
-        settingsTrayContent.classList = "rj-right-tray-content rj-settings-extended-tray-content";
-        settingsTray.appendChild(settingsTrayContent);
-        document.getElementById("head").appendChild(settingsTray);
+
+        
         GM_addStyle(".rj-notifications-tray .arrow { right: 150px }");
         GM_addStyle(
-            ".rj-settings-extended-tray { height: 0px; border-radius: 4px; overflow: hidden; }"
+            ".rj-settings-extended-tray { height: auto; border-radius: 4px; overflow: hidden; }"
         );
         GM_addStyle(
             ".rj-settings-extended-tray-content { min-width: 208px; max-width: 288px; border-radius: 4px; background-color: var(--colour-surface-mid); border: solid 1px var(--colour-stroke-weak); }"
         );
-
-        $(".rj-settings-extended").click(ExtendedSettings);
-        $(".rj-notifications").click(function () {
-            hideExtendedSettingsTray();
-        });
-        $(".rj-profile").click(function () {
-            hideExtendedSettingsTray();
-        });
-        $("body").click(function () {
-            hideExtendedSettingsTray();
-        });
-
-        const s = $(".rj-settings-extended-tray");
-        function ExtendedSettings() {
-            s.hasClass("rj-open")
-                ? hideExtendedSettingsTray()
-                : showExtendedSettingsTray();
-        }
-
-        function hideExtendedSettingsTray() {
-            setTimeout(function () {
-                s.removeClass("rj-open");
-                s.css("height", "");
-            }, 0);
-        }
-
-        function showExtendedSettingsTray() {
-            setTimeout(function () {
-                const a = $(".rj-notifications-tray");
-                a.removeClass("rj-open");
-                a.css("height", "");
-                $(".notification-menu").removeClass("show");
-            }, 250);
-            setTimeout(function () {
-                const g = $(".rj-profile-tray");
-                g.removeClass("rj-open");
-                g.css("height", "");
-            }, 250);
-            setTimeout(function () {
-                s.addClass("rj-open");
-                s.css("height", "auto");
-            }, 0);
-        }
-
         GM_addStyle(
             ".settings-extended-title {font-size: 16px; font-weight: 700; line-height-24px; color: var(--colour-neutral-moderate); text-align: center;}"
         );
@@ -120,17 +100,59 @@
         GM_addStyle(
             ".blur-image-override img { filter: blur(0px) } .hide { visibility: hidden }"
         );
+        $("body").click(function () {
+            console.log('second hidden');
+            //hideExtendedSettingsTray();
+        });
+        menu_item.click(ExtendedSettings);
+        //$(".rj-notifications").click(function () {
+        //    hideExtendedSettingsTray();
+        //});
+        //$(".rj-profile").click(function () {
+        //    hideExtendedSettingsTray();
+        //});
+        
 
+        //const s = $(".rj-settings-extended-tray");
+        function ExtendedSettings() {
+            console.log(document.getElementById("settings_tray"));
+            if (document.getElementById("settings_tray") != null ) {
+                hideExtendedSettingsTray();
+                console.log('hidden');
+            } else {
+                showExtendedSettingsTray();
+                console.log('shown');
+            }
+        }
 
-        $(".rj-settings-extended-tray-content").append(
-            '<li><div class="section-content"><i class="material-icons no-select">tune</i><div class="settings-extended-title">Extended Settings</div></div></li><li class="user-profile-menu-divider"></li>'
-        );
+        function hideExtendedSettingsTray() {
+            setTimeout(function () {
+                if (head.lastElementChild.classList.contains('rj-open')) {
+                    head.removeChild(head.lastElementChild);
+                }
+            }, 0);
+        }
 
-        $(".rj-settings-extended-tray-content").append(createToggle("Extend Page Width", "extend-page-width", extendPage));
-        $("#extend-page-width").click(function () {extend_page_func($("#extend-page-width .material-icons")[0]);});
+        function showExtendedSettingsTray() {
+            setTimeout(function () {
+                const settingsTray = document.createElement("div");
+                const settingsTrayContent = document.createElement("ul");
+                settingsTray.classList = "scrollbar border-stroke-weak bg-surface-mid max-h-128 z-dropdown flex min-w-52 max-w-72 flex-col overflow-auto rounded border py-1.5 text-left shadow-md focus:outline-none max-h-[calc(100vh-3.5rem)] rj-right-tray rj-settings-extended-tray rj-open";
+                settingsTray.id = "settings_tray";
+                //settingsTray.style = "position: absolute; left: 3167px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3375px; max-height: min(var(--anchor-max-height, 100vh), 1232px);";
+                settingsTrayContent.classList = "rj-right-tray-content rj-settings-extended-tray-content";
+                settingsTray.appendChild(settingsTrayContent);
+                console.log(head);
+                head.appendChild(settingsTray);
+                $(".rj-settings-extended-tray-content").append('<li><div class="section-content"><svg viewBox="0 0 24 24" style="width: 1.5rem; height: 1.5rem;" role="presentation" class="flex-shrink-0"><path d="M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z" style="fill: currentcolor;"></path></svg><div class="settings-extended-title">Extended Settings</div></div></li><li class="bg-surface-translucent-mid my-1.5 block h-px w-full user-profile-menu-divider"></li>');
 
-        $(".rj-settings-extended-tray-content").append(createToggle("Toggle Hide Blur", "toggle-hide-blur", autoRBlur));
-        $("#toggle-hide-blur").click(function() {toggle_hide_blur($("#toggle-hide-blur .material-icons")[0])});
+                $(".rj-settings-extended-tray-content").append(createToggle("Extend Page Width", "extend-page-width", extendPage));
+                $("#extend-page-width").click(function () { extend_page_func(document.getElementById("extend-page-width").children[0].children[0]); });
+
+                $(".rj-settings-extended-tray-content").append(createToggle("Toggle Hide Blur", "toggle-hide-blur", autoRBlur));
+                $("#toggle-hide-blur").click(function () { toggle_hide_blur(document.getElementById("toggle-hide-blur").children[0].children[0]); });
+            }, 0);
+        }
 
         /**
          * @param {String} text Text for the setting
@@ -141,11 +163,11 @@
             const li = document.createElement("li");
             const a = document.createElement("a");
             const div = document.createElement("div");
-            const icon = document.createElement("i");
+            const icon = document.createElement("div");
 
+            li.classList = "w-full outline-none text-neutral-moderate text-left transition-colors hover:text-neutral-strong hover:bg-surface-translucent-mid cursor-pointer";
             div.classList = "section-content noselect";
-            icon.classList = "material-icons noselect";
-            icon.innerText = flipToggle(enabled);
+            icon.innerHTML = flipToggle(enabled);
             a.classList = "setting-interact";
             a.id = id;
 
@@ -153,16 +175,15 @@
             a.append(div);
             div.append(icon);
             div.append(text);
-            console.log(text);
 
             return li;
         }
 
         function flipToggle(variable) {
             if (variable) {
-                return "check_box";
+                return '<svg viewBox=\"0 -960 960 960\" style=\"width: 1.5rem; height: 1.5rem;\" role=\"presentation\" class=\"flex-shrink-0\"><path d="m424-312 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" style=\"fill: currentcolor;\"></path></svg>';
             } else {
-                return "check_box_outline_blank";
+                return '<svg viewBox=\"0 -960 960 960\" style=\"width: 1.5rem; height: 1.5rem;\" role=\"presentation\" class=\"flex-shrink-0\"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Z" style=\"fill: currentcolor;\"></path></svg>';
             }
         }
 
@@ -173,7 +194,7 @@
             extendPage = !extendPage;
             GM_setValue("extend_page", extendPage);
             extend_page();
-            toggle.innerText = flipToggle(extendPage);
+            toggle.innerHTML = flipToggle(extendPage);
         }
 
         function extend_page() {
@@ -192,7 +213,7 @@
             autoRBlur = !autoRBlur;
             GM_setValue("rBlur", autoRBlur);
             remove_blur();
-            toggle.innerText = flipToggle(autoRBlur);
+            toggle.innerHTML = flipToggle(autoRBlur);
         }
 
         function remove_blur() {
@@ -226,7 +247,8 @@
 
             buttonNode.addEventListener("click", function () {
                 autoRBlur = true;
-                remove_blur()});
+                remove_blur()
+            });
         } else if (autoRBlur) {
             remove_blur();
         }
