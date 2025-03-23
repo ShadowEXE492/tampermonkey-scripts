@@ -267,8 +267,7 @@
                 autoRBlur = true;
                 remove_blur()
             });
-        } else if (autoRBlur) {
-            remove_blur();
         }
+        remove_blur();
     });
 })();
