@@ -234,7 +234,7 @@
                 GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
                 $(".hide").removeClass("hide");
                 document.getElementById('remove-blur').classList.remove('hide');
-            } else if($('.blur-image')[0] == null && $('blur-image-sm')[0] == null){
+            } else if($('.blur-image')[0] == null && $('.blur-image-sm')[0] == null){
                 document.getElementById('remove-blur').classList.add('hide');
             } else {
                 GM_addStyle(".blur-image-sm img {filter: blur(24px)}");
