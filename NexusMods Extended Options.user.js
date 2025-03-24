@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NexusMods Extended
 // @namespace    https://www.nexusmods.com/
-// @version      1.1.6
+// @version      1.1.7
 // @description  Extends page settings and adds utilites
 // @author       Toestub
 // @match        https://www.nexusmods.com/*
@@ -27,14 +27,61 @@
         extend_page();
         hide_collections();
 
-        var old_menu = null;
-        var new_menu = null;
-            try { old_menu = $(".nav-interact-buttons")[0] } catch { console.error("old_menu was undifined");};
-            try { new_menu = $('.lg\\:gap-x-2') } catch { console.error("new_menu was undifined");};
-        var head = null;
-        var menu_item = null;
+        const header = $('header');
+        //var head = null;
+        var menus = [];
 
-        if (old_menu != null) {
+        if (header != null) {
+            if (header.length > 1) {
+                
+                GM_addStyle(`
+                    [type=button],
+                    [type=reset],
+                    [type=submit],
+                    button {
+                        -webkit-appearance:button;
+                        background-color:transparent;
+                        background-image:none;
+                        border:0px;
+                    }
+                `);
+
+                var check = function () {
+                    if (header.children() != null) {
+                    menus.push(ExtendedSettingsMenu());
+                    header.first().find('.nav-interact-buttons').append(menus[menus.length - 1]);
+                    menus.push(ExtendedSettingsMenu());
+                    header.last().find('.rj-user-nav-right').append(menus[menus.length - 1]);
+                    } else {
+                        setTimeout(check, 1000);
+                    }
+                }
+
+                check();
+
+            } else {
+                var menus = [];
+                var check = function () {
+                    if (header.children() != null) {
+                        
+                        header.children().each( function() {
+                            menus.push(ExtendedSettingsMenu());
+                            $(this).children().last().append(menus[menus.length - 1])
+                        });
+                    } else {
+                        setTimeout(check, 1000);
+                    }
+                }
+
+                check();
+    
+                GM_addStyle('.rj-right-tray {position: fixed; right: 0px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3087px; max-height: min(var(--anchor-max-height, 100vh), 1215px);}');
+            }
+        } else {
+            console.error('Page appears to have no header');
+        }
+
+        function ExtendedSettingsMenuOld() {
             const settingsButton = document.createElement("div");
             const settingsButtonBackground = document.createElement("div");
             const settingsButtonIcon = document.createElement("i");
@@ -44,36 +91,22 @@
             settingsButtonIcon.textContent = "tune";
             settingsButton.appendChild(settingsButtonBackground);
             settingsButton.appendChild(settingsButtonIcon);
-            old_menu.appendChild(settingsButton);
 
-            head = document.getElementById("head");
-            menu_item = $(".rj-settings-extended");
-
+            return settingsButton;
         }
-        else if (new_menu != null) {
+
+        function ExtendedSettingsMenu() {
             const new_menu_item = document.createElement('div');
             const new_menu_button = document.createElement('button');
             new_menu_item.append(new_menu_button);
             new_menu_button.innerHTML = "<svg viewBox=\"0 0 24 24\" style=\"width: 1.5rem; height: 1.5rem;\" role=\"presentation\" class=\"flex-shrink-0\"><path d=\"M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z\" style=\"fill: currentcolor;\"></path></svg>";
-            new_menu.append(new_menu_item);
-
+            
             new_menu_item.classList = "relative flex items-center justify-center";
             new_menu_button.classList = "flex items-center justify-center shrink-0 rounded-full before:rounded-full transition size-10 cursor-pointer hover-overlay text-neutral-moderate hover:text-neutral-strong select-none";
             new_menu_button.id = "new_menu";
-        
-            head = document.getElementById('new_menu').parentElement;
-            menu_item = $('#new_menu');
 
-            GM_addStyle('.rj-right-tray {position: fixed; right: 0px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3087px; max-height: min(var(--anchor-max-height, 100vh), 1215px);}');
+            return new_menu_item;
         }
-        else {
-            console.log(old_menu);
-            console.log(new_menu);
-        }
-        //create settings menu
-        //menu button
-
-        //menu panel
 
         
         GM_addStyle(".rj-notifications-tray .arrow { right: 150px }");
@@ -104,7 +137,7 @@
             hideExtendedSettingsTray();
         });
 
-        menu_item.click(ExtendedSettings);
+        menus.forEach((menu) => menu.children[0].addEventListener('click', function () { ExtendedSettings(menu) }));
         //$(".rj-notifications").click(function () {
         //    hideExtendedSettingsTray();
         //});
@@ -114,23 +147,23 @@
         
 
         //const s = $(".rj-settings-extended-tray");
-        function ExtendedSettings() {
+        function ExtendedSettings(menu) {
             if (document.getElementById("settings_tray") != null ) {
-                hideExtendedSettingsTray();
+                hideExtendedSettingsTray(menu);
             } else {
-                showExtendedSettingsTray();
+                showExtendedSettingsTray(menu);
             }
         }
 
-        function hideExtendedSettingsTray() {
+        function hideExtendedSettingsTray(menu) {
             setTimeout(function () {
-                if (head.lastElementChild.classList.contains('rj-open')) {
-                    head.removeChild(head.lastElementChild);
+                if (menu.lastElementChild.classList.contains('rj-open')) {
+                    menu.removeChild(menu.lastElementChild);
                 }
             }, 0);
         }
 
-        function showExtendedSettingsTray() {
+        function showExtendedSettingsTray(menu) {
             setTimeout(function () {
                 const settingsTray = document.createElement("div");
                 const settingsTrayContent = document.createElement("ul");
@@ -139,7 +172,7 @@
                 //settingsTray.style = "position: absolute; left: 3167px; top: 55px; --button-width: 76px; overflow: auto; max-width: 3375px; max-height: min(var(--anchor-max-height, 100vh), 1232px);";
                 settingsTrayContent.classList = "rj-right-tray-content rj-settings-extended-tray-content";
                 settingsTray.appendChild(settingsTrayContent);
-                head.appendChild(settingsTray);
+                menu.appendChild(settingsTray);
                 $(".rj-settings-extended-tray-content").append('<li><div class="section-content"><svg viewBox="0 0 24 24" style="width: 1.5rem; height: 1.5rem;" role="presentation" class="flex-shrink-0"><path d="M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z" style="fill: currentcolor;"></path></svg><div class="settings-extended-title">Extended Settings</div></div></li><li class="bg-surface-translucent-mid my-1.5 block h-px w-full user-profile-menu-divider"></li>');
 
                 $(".rj-settings-extended-tray-content").append(createToggle("Extend Page Width", "extend-page-width", extendPage));
@@ -216,6 +249,8 @@
         }
 
         function remove_blur() {
+            var removeBlur = null;
+            try {removeBlur = document.getElementById('remove-blur');} catch {console.error('not on NSFW mod page')}
             if (autoRBlur) {
                 $(".mod_adult_warning_wrapper").addClass("hide");
                 $(".mod_description_container.blur-description").addClass("blur-removed");
@@ -224,18 +259,18 @@
                 GM_addStyle(".blur-image img {filter: blur(0px)}");
                 GM_addStyle(".unblur-btn {visibility: hidden}");
                 GM_addStyle(".blur-xl {--tw-blur: blur(0px)}");
-                document.getElementById('remove-blur').classList.add('hide');
+                if (removeBlur != null) {removeBlur.classList.remove('hide');}
             } else if($('.mod_description_container.blur-removed')[0] != null) {
                 $(".mod_description_container").addClass("blur-description");
                 $(".mod_description_container").removeClass("blur-removed");
                 GM_addStyle(".blur-image-sm img {filter: blur(24px)}");
                 GM_addStyle(".blur-image img {filter: blur(64px)}");
                 GM_addStyle(".unblur-btn {visibility: visible}");
-                GM_addStyle(".blur-xl {--tw-blur: blur(24px)}");
+                GM_addStyle(".blur-xl {--tw-blur: blur(24px)}"); 
                 $(".hide").removeClass("hide");
-                document.getElementById('remove-blur').classList.remove('hide');
+                if (removeBlur != null) {removeBlur.classList.remove('hide');}
             } else if($('.blur-image')[0] == null && $('.blur-image-sm')[0] == null){
-                document.getElementById('remove-blur').classList.add('hide');
+                if (removeBlur != null) {removeBlur.classList.remove('hide');}
             } else {
                 GM_addStyle(".blur-image-sm img {filter: blur(24px)}");
                 GM_addStyle(".blur-image img {filter: blur(64px)}");
